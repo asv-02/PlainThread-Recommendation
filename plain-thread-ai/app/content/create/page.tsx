@@ -116,13 +116,13 @@ export default function CreatePage() {
 
           <div className="bg-brand-50 rounded-lg p-4">
             <p className="text-xs text-brand-600 font-medium mb-1">HOOK (0-3s)</p>
-            <p className="text-sm font-medium">{reelScript.hook.text}</p>
-            <p className="text-xs text-gray-500 mt-1">Visual: {reelScript.hook.visual}</p>
+            <p className="text-sm font-medium">{reelScript.hook?.text || ''}</p>
+            <p className="text-xs text-gray-500 mt-1">Visual: {reelScript.hook?.visual || ''}</p>
           </div>
 
           <div className="space-y-2">
             <p className="text-xs font-medium text-gray-500">BODY</p>
-            {reelScript.body.map((segment, i) => (
+            {reelScript.body?.map((segment, i) => (
               <div key={i} className="bg-gray-50 rounded-lg p-3 text-sm">
                 <span className="text-xs text-gray-400">{segment.timestamp}</span>
                 <p className="mt-1">{segment.narration}</p>
@@ -134,15 +134,15 @@ export default function CreatePage() {
 
           <div className="bg-green-50 rounded-lg p-4">
             <p className="text-xs text-green-600 font-medium mb-1">CTA</p>
-            <p className="text-sm">{reelScript.cta.text}</p>
-            <p className="text-xs text-gray-500 mt-1">Visual: {reelScript.cta.visual}</p>
+            <p className="text-sm">{reelScript.cta?.text || ''}</p>
+            <p className="text-xs text-gray-500 mt-1">Visual: {reelScript.cta?.visual || ''}</p>
           </div>
 
           <div className="border-t pt-4 space-y-2">
             <p className="text-sm"><strong>Music:</strong> {reelScript.music_suggestion}</p>
             <p className="text-sm"><strong>Caption:</strong> {reelScript.caption}</p>
-            <p className="text-sm"><strong>Hashtags:</strong> {reelScript.hashtags.join(' ')}</p>
-            {reelScript.production_notes.length > 0 && (
+            <p className="text-sm"><strong>Hashtags:</strong> {reelScript.hashtags?.join(' ') || ''}</p>
+            {reelScript.production_notes?.length > 0 && (
               <div>
                 <p className="text-xs font-medium text-gray-500 mb-1">PRODUCTION NOTES</p>
                 <ul className="text-sm text-gray-600 list-disc list-inside">
@@ -159,7 +159,7 @@ export default function CreatePage() {
         <div className="bg-white border rounded-xl p-6 space-y-4">
           <h2 className="font-semibold text-lg">{carousel.title}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {carousel.slides.map(slide => (
+            {carousel.slides?.map(slide => (
               <div key={slide.slide_number} className="bg-gray-50 rounded-lg p-4">
                 <p className="text-xs text-gray-400 mb-1">Slide {slide.slide_number}</p>
                 <p className="font-medium text-sm">{slide.headline}</p>
@@ -171,7 +171,7 @@ export default function CreatePage() {
           <div className="border-t pt-4 space-y-2">
             <p className="text-sm"><strong>Caption:</strong> {carousel.caption}</p>
             <p className="text-sm"><strong>CTA:</strong> {carousel.cta}</p>
-            <p className="text-sm"><strong>Hashtags:</strong> {carousel.hashtags.join(' ')}</p>
+            <p className="text-sm"><strong>Hashtags:</strong> {carousel.hashtags?.join(' ') || ''}</p>
           </div>
         </div>
       )}
@@ -185,20 +185,20 @@ export default function CreatePage() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {shotList.equipment_needed.map((eq, i) => (
+            {shotList.equipment_needed?.map((eq, i) => (
               <span key={i} className="text-xs bg-gray-100 px-2 py-1 rounded">{eq}</span>
             ))}
           </div>
 
           <div className="space-y-2">
-            {shotList.shots.map(shot => (
+            {shotList.shots?.map(shot => (
               <div key={shot.shot_number} className="bg-gray-50 rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded">#{shot.shot_number}</span>
                   <span className="text-xs text-gray-400">{shot.angle} · {shot.lighting}</span>
                 </div>
                 <p className="text-sm">{shot.description}</p>
-                {shot.props.length > 0 && <p className="text-xs text-gray-500 mt-1">Props: {shot.props.join(', ')}</p>}
+                {shot.props?.length > 0 && <p className="text-xs text-gray-500 mt-1">Props: {shot.props.join(', ')}</p>}
                 {shot.notes && <p className="text-xs text-gray-400 mt-1 italic">{shot.notes}</p>}
               </div>
             ))}
@@ -206,7 +206,7 @@ export default function CreatePage() {
 
           <div className="border-t pt-4 space-y-2">
             <p className="text-sm"><strong>Styling:</strong> {shotList.styling_notes}</p>
-            <p className="text-sm"><strong>Locations:</strong> {shotList.location_suggestions.join(', ')}</p>
+            <p className="text-sm"><strong>Locations:</strong> {shotList.location_suggestions?.join(', ') || ''}</p>
           </div>
         </div>
       )}

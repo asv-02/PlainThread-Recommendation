@@ -37,6 +37,11 @@ export default function CompetitorsPage() {
   const [posts, setPosts] = useState<CompetitorPost[]>([])
   const [showForm, setShowForm] = useState(false)
   const [showPostForm, setShowPostForm] = useState<string | null>(null)
+  const [showUrlAnalyze, setShowUrlAnalyze] = useState<string | null>(null)
+  const [urlInput, setUrlInput] = useState('')
+  const [urlCaption, setUrlCaption] = useState('')
+  const [urlTranscript, setUrlTranscript] = useState('')
+  const [urlAnalyzing, setUrlAnalyzing] = useState(false)
   const [expanded, setExpanded] = useState<string | null>(null)
   const [analysis, setAnalysis] = useState<Analysis | null>(null)
   const [analyzing, setAnalyzing] = useState(false)
@@ -99,6 +104,31 @@ export default function CompetitorsPage() {
     setPostForm({ format: 'reel', topic: '', hook: '', content_pillar: '', estimated_engagement: '' })
     setShowPostForm(null)
     loadPosts()
+  }
+
+  async function analyzeFromUrl(competitorId: string) {
+    if (!urlInput && !urlCaption && !urlTranscript) return
+    setUrlAnalyzing(true)
+    try {
+      const res = await apiFetch('/api/ai/analyze-post', {
+        method: 'POST',
+        body: JSON.stringify({
+          url: urlInput || undefined,
+          caption: urlCaption || undefined,
+          transcript: urlTranscript || undefined,
+          competitor_id: competitorId,
+        }),
+      })
+      const data = await res.json()
+      if (!data.error) {
+        setUrlInput('')
+        setUrlCaption('')
+        setUrlTranscript('')
+        setShowUrlAnalyze(null)
+        loadPosts()
+      }
+    } catch { /* ignore */ }
+    setUrlAnalyzing(false)
   }
 
   async function runAnalysis(competitorId?: string) {
@@ -214,6 +244,12 @@ export default function CompetitorsPage() {
                   </div>
                   <div className="flex gap-2">
                     <button
+                      onClick={() => setShowUrlAnalyze(showUrlAnalyze === c.id ? null : c.id)}
+                      className="text-xs px-2 py-1 border rounded hover:border-brand-300 text-brand-600"
+                    >
+                      🔗 Analyze URL
+                    </button>
+                    <button
                       onClick={() => setShowPostForm(showPostForm === c.id ? null : c.id)}
                       className="text-xs px-2 py-1 border rounded hover:border-brand-300"
                     >
@@ -244,6 +280,22 @@ export default function CompetitorsPage() {
                     <input value={postForm.estimated_engagement} onChange={e => setPostForm(p => ({ ...p, estimated_engagement: e.target.value }))} placeholder="Engagement (e.g., high, 5k likes)" className="w-full px-2 py-1.5 border rounded text-xs" />
                     <button type="submit" className="px-3 py-1.5 bg-brand-600 text-white rounded text-xs">Add Post</button>
                   </form>
+                )}
+
+                {showUrlAnalyze === c.id && (
+                  <div className="px-4 pb-4 space-y-2 border-t pt-3">
+                    <p className="text-xs text-gray-500 font-medium">Analyze post from URL or paste content</p>
+                    <input value={urlInput} onChange={e => setUrlInput(e.target.value)} placeholder="Instagram URL (reel/post/carousel)" className="w-full px-2 py-1.5 border rounded text-xs" />
+                    <textarea value={urlCaption} onChange={e => setUrlCaption(e.target.value)} placeholder="Caption (paste if URL doesn't fetch it)" rows={2} className="w-full px-2 py-1.5 border rounded text-xs" />
+                    <textarea value={urlTranscript} onChange={e => setUrlTranscript(e.target.value)} placeholder="Reel transcript/dialogue (optional)" rows={2} className="w-full px-2 py-1.5 border rounded text-xs" />
+                    <button
+                      onClick={() => analyzeFromUrl(c.id)}
+                      disabled={urlAnalyzing || (!urlInput && !urlCaption && !urlTranscript)}
+                      className="px-3 py-1.5 bg-brand-600 text-white rounded text-xs disabled:opacity-50"
+                    >
+                      {urlAnalyzing ? 'Analyzing...' : 'Analyze & Save'}
+                    </button>
+                  </div>
                 )}
 
                 {isExpanded && competitorPosts.length > 0 && (

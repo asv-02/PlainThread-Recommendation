@@ -17,6 +17,7 @@ const navItems = [
   { href: '/content', label: 'Content', icon: Pencil },
   { href: '/content/ideas', label: 'Idea Lab', icon: Lightbulb },
   { href: '/content/create', label: 'Create', icon: Film },
+  { href: '/content/analyze', label: 'Analyze', icon: TrendingUp },
   { href: '/content/strategy', label: 'Strategy', icon: TrendingUp },
   { href: '/content/posts', label: 'Posts', icon: BarChart3 },
   { href: '/competitors', label: 'Competitors', icon: Users },
