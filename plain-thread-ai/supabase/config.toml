@@ -1,0 +1,6 @@
+[project]
+id = "plain-thread-ai"
+
+[api]
+port = 54321
+schemas = ["public"]
