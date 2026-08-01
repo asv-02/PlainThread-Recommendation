@@ -17,6 +17,10 @@ export default function PostsPage() {
   const [posts, setPosts] = useState<Post[]>([])
   const [showAdd, setShowAdd] = useState(false)
   const [showImport, setShowImport] = useState(false)
+  const [showScrape, setShowScrape] = useState(false)
+  const [scrapeUrl, setScrapeUrl] = useState('')
+  const [scrapeLoading, setScrapeLoading] = useState(false)
+  const [scrapeResult, setScrapeResult] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [form, setForm] = useState({
     format: 'reel', caption: '', published_at: '',
@@ -34,6 +38,30 @@ export default function PostsPage() {
       setPosts(data.posts || [])
     } catch { /* ignore */ }
     setLoading(false)
+  }
+
+  async function scrapeMyProfile() {
+    if (!scrapeUrl) return
+    setScrapeLoading(true)
+    setScrapeResult(null)
+    try {
+      const res = await apiFetch('/api/posts/scrape', {
+        method: 'POST',
+        body: JSON.stringify({ profile_url: scrapeUrl, max_posts: 100 }),
+      })
+      const data = await res.json()
+      if (data.error) {
+        setScrapeResult(`Error: ${data.error}`)
+      } else {
+        setScrapeResult(`Imported ${data.imported} posts from @${data.profile}`)
+        setScrapeUrl('')
+        setShowScrape(false)
+        loadPosts()
+      }
+    } catch {
+      setScrapeResult('Failed to scrape')
+    }
+    setScrapeLoading(false)
   }
 
   async function addPost(e: React.FormEvent) {
@@ -83,6 +111,9 @@ export default function PostsPage() {
           <p className="text-gray-500 text-sm">Track and import your published content.</p>
         </div>
         <div className="flex gap-2">
+          <button onClick={() => setShowScrape(!showScrape)} className="flex items-center gap-2 px-3 py-2 border rounded-lg text-sm hover:border-green-300 text-green-600 transition">
+            📥 Scrape Profile
+          </button>
           <button onClick={() => setShowImport(!showImport)} className="flex items-center gap-2 px-3 py-2 border rounded-lg text-sm hover:border-brand-300 transition">
             <Upload className="w-4 h-4" /> Import
           </button>
@@ -91,6 +122,33 @@ export default function PostsPage() {
           </button>
         </div>
       </div>
+
+      {/* Scrape Section */}
+      {showScrape && (
+        <div className="bg-white border rounded-xl p-5 mb-6">
+          <h3 className="font-semibold text-sm mb-2">Scrape Instagram Profile (via Apify)</h3>
+          <p className="text-xs text-gray-500 mb-3">
+            Paste your Instagram profile URL. This uses Apify to fetch all your posts with engagement metrics.
+            Requires an Apify API token in settings.
+          </p>
+          <div className="flex gap-2">
+            <input
+              value={scrapeUrl}
+              onChange={e => setScrapeUrl(e.target.value)}
+              placeholder="https://www.instagram.com/yourprofile/"
+              className="flex-1 px-3 py-2 border rounded-lg text-sm"
+            />
+            <button
+              onClick={scrapeMyProfile}
+              disabled={scrapeLoading || !scrapeUrl}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm disabled:opacity-50"
+            >
+              {scrapeLoading ? 'Scraping...' : 'Scrape'}
+            </button>
+          </div>
+          {scrapeResult && <p className="text-sm mt-2 text-gray-600">{scrapeResult}</p>}
+        </div>
+      )}
 
       {/* Import Section */}
       {showImport && (

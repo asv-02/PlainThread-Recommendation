@@ -15,6 +15,7 @@
     "@google/generative-ai": "^0.24.1",
     "@supabase/ssr": "^0.3.0",
     "@supabase/supabase-js": "^2.43.0",
+    "apify-client": "^2.24.0",
     "clsx": "^2.1.0",
     "date-fns": "^3.6.0",
     "lucide-react": "^0.378.0",
